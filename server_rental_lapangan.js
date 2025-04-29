@@ -204,7 +204,7 @@ function handleLogin(req, res, role) {
 
     if (!username || !password) {
         return res.status(400).json({
-            message: "Username/email and password are required",
+            message: "Username or email and password are required",
             status: 400,
             error: "Bad Request",
             response: null
@@ -285,7 +285,14 @@ app.post('/send_reset_password', (req, res) => {
     const identifier = username || email;
 
     db.query(query, [identifier], (err, results) => {
-        if (err || results.length === 0) return res.status(400).send('User not found');
+        if (err || results.length === 0) {
+            return res.status(400).json({
+                message: "User not found",
+                status: 400,
+                error: "Bad Request",
+                response: null
+            });
+        }
 
         const userId = results[0].id;
         const userEmail = results[0].email;
@@ -585,7 +592,7 @@ app.post('/book_slot', isCustomer, (req, res) => {
 
             if (!court.is_active) {
                 return res.status(403).json({
-                    message: "Court is currently inactive (e.g. under maintenance)",
+                    message: "Court is currently inactive",
                     status: 403,
                     error: "Forbidden",
                     response: null
